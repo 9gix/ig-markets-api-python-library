@@ -995,7 +995,12 @@ class IGService:
                 "lastTradedVolume": "Volume",
             }
 
-        last = prices[0]["lastTradedVolume"] or prices[0]["closePrice"]["lastTraded"]
+        last = any(
+            isinstance(vol, int) for vol in (
+                prices[0]['lastTradedVolume'],
+                prices[0]['closePrice']['lastTraded']
+            )
+        )
         df = json_normalize(prices)
         df = df.set_index("snapshotTime")
         df.index = pd.to_datetime(df.index, format=DATE_FORMATS[int(version)])
